@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 public class CheckerApp {
@@ -11,29 +13,33 @@ public class CheckerApp {
         // Hardcoded string
         String word = "madam";
 
-        // Create a stack
+        // Create a Queue (FIFO) and a Stack (LIFO)
+        Queue<Character> queue = new LinkedList<>();
         Stack<Character> stack = new Stack<>();
 
-        // Push characters into stack
+        // Enqueue and push characters
         for (int i = 0; i < word.length(); i++) {
-            stack.push(word.charAt(i));
+            char c = word.charAt(i);
+            queue.add(c);  // FIFO
+            stack.push(c); // LIFO
         }
 
-        // Pop characters to create reversed string
-        String reversed = "";
-
-        while (!stack.isEmpty()) {
-            reversed = reversed + stack.pop();
+        // Compare dequeue vs pop
+        boolean isPalindrome = true;
+        while (!queue.isEmpty() && !stack.isEmpty()) {
+            if (!queue.poll().equals(stack.pop())) {
+                isPalindrome = false;
+                break;
+            }
         }
 
-        // Check if palindrome
-        if (word.equals(reversed)) {
+        // Display result
+        if (isPalindrome) {
             System.out.println("The string \"" + word + "\" is a Palindrome.");
         } else {
             System.out.println("The string \"" + word + "\" is not a Palindrome.");
         }
 
     }
-
 
 }
