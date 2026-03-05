@@ -1,6 +1,5 @@
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class CheckerApp {
 
@@ -13,21 +12,18 @@ public class CheckerApp {
         // Hardcoded string
         String word = "madam";
 
-        // Create a Queue (FIFO) and a Stack (LIFO)
-        Queue<Character> queue = new LinkedList<>();
-        Stack<Character> stack = new Stack<>();
+        // Create a Deque
+        Deque<Character> deque = new ArrayDeque<>();
 
-        // Enqueue and push characters
+        // Insert characters into deque
         for (int i = 0; i < word.length(); i++) {
-            char c = word.charAt(i);
-            queue.add(c);  // FIFO
-            stack.push(c); // LIFO
+            deque.addLast(word.charAt(i));
         }
 
-        // Compare dequeue vs pop
+        // Compare front and rear characters
         boolean isPalindrome = true;
-        while (!queue.isEmpty() && !stack.isEmpty()) {
-            if (!queue.poll().equals(stack.pop())) {
+        while (deque.size() > 1) {
+            if (!deque.removeFirst().equals(deque.removeLast())) {
                 isPalindrome = false;
                 break;
             }
