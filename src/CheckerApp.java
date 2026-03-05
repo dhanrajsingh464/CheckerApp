@@ -92,11 +92,11 @@ public class CheckerApp {
         System.out.print("Enter a string to check for palindrome: ");
         String input = scanner.nextLine();
 
-        // Normalize input
-        String word = input.replaceAll("\\s+", "").toLowerCase();
+        // Normalize input: remove spaces and lowercase (UC10)
+        String normalized = input.replaceAll("\\s+", "").toLowerCase();
 
         // Let user choose method
-        System.out.println("Choose method:");
+        System.out.println("Choose method to check palindrome:");
         System.out.println("1. Linked List");
         System.out.println("2. Recursive");
         System.out.print("Enter choice (1 or 2): ");
@@ -106,21 +106,20 @@ public class CheckerApp {
         boolean isPalindrome = false;
 
         if (choice == 1) {
-            Node head = stringToLinkedList(word);
+            Node head = stringToLinkedList(normalized);
             isPalindrome = isPalindromeLinkedList(head);
         } else if (choice == 2) {
-            isPalindrome = isPalindromeRecursive(word, 0, word.length() - 1);
+            isPalindrome = isPalindromeRecursive(normalized, 0, normalized.length() - 1);
         } else {
             System.out.println("Invalid choice. Defaulting to Linked List method.");
-            Node head = stringToLinkedList(word);
+            Node head = stringToLinkedList(normalized);
             isPalindrome = isPalindromeLinkedList(head);
         }
 
         if (isPalindrome) {
-            System.out.println("The string \"" + input + "\" is a Palindrome.");
+            System.out.println("The string \"" + input + "\" is a Palindrome (ignoring spaces & case).");
         } else {
-            System.out.println("The string \"" + input + "\" is not a Palindrome.");
+            System.out.println("The string \"" + input + "\" is not a Palindrome (ignoring spaces & case).");
         }
     }
-
 }
