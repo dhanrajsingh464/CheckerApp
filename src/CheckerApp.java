@@ -1,6 +1,5 @@
 public class CheckerApp {
 
-
     public static void main(String[] args) {
 
         System.out.println("Welcome to the Palindrome Checker Application");
@@ -9,21 +8,31 @@ public class CheckerApp {
 
         // Hardcoded string
         String word = "madam";
-        String reversed = "";
 
-        // Reverse the string using for loop
-        for (int i = word.length() - 1; i >= 0; i--) {
-            reversed = reversed + word.charAt(i);
+        // Convert string to character array
+        char[] chars = word.toCharArray();
+
+        int start = 0;
+        int end = chars.length - 1;
+        boolean isPalindrome = true;
+
+        // Two-pointer technique
+        while (start < end) {
+            if (chars[start] != chars[end]) {
+                isPalindrome = false;
+                break;
+            }
+            start++;
+            end--;
         }
 
-        // Check if the string is palindrome
-        if (word.equals(reversed)) {
+        // Display result
+        if (isPalindrome) {
             System.out.println("The string \"" + word + "\" is a Palindrome.");
         } else {
             System.out.println("The string \"" + word + "\" is not a Palindrome.");
         }
 
     }
-
 
 }
