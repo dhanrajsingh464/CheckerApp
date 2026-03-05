@@ -2,84 +2,100 @@ import java.util.Scanner;
 
 public class CheckerApp {
 
-    // Node class for singly linked list
-    static class Node {
-        char data;
-        Node next;
+    // PalindromeChecker class encapsulates all palindrome logic
+    static class PalindromeChecker {
 
-        Node(char data) {
-            this.data = data;
-            this.next = null;
+        // Node class for linked list
+        static class Node {
+            char data;
+            Node next;
+
+            Node(char data) {
+                this.data = data;
+                this.next = null;
+            }
         }
-    }
 
-    // Linked List Methods
-    static Node reverse(Node head) {
-        Node prev = null;
-        Node current = head;
-        while (current != null) {
-            Node nextNode = current.next;
-            current.next = prev;
-            prev = current;
-            current = nextNode;
+        // Linked List Methods
+        private Node reverse(Node head) {
+            Node prev = null;
+            Node current = head;
+            while (current != null) {
+                Node nextNode = current.next;
+                current.next = prev;
+                prev = current;
+                current = nextNode;
+            }
+            return prev;
         }
-        return prev;
-    }
 
-    static Node findMiddle(Node head) {
-        Node slow = head;
-        Node fast = head;
-        while (fast != null && fast.next != null && fast.next.next != null) {
-            slow = slow.next;
-            fast = fast.next.next;
+        private Node findMiddle(Node head) {
+            Node slow = head;
+            Node fast = head;
+            while (fast != null && fast.next != null && fast.next.next != null) {
+                slow = slow.next;
+                fast = fast.next.next;
+            }
+            return slow;
         }
-        return slow;
-    }
 
-    static Node stringToLinkedList(String word) {
-        Node head = null, tail = null;
-        for (int i = 0; i < word.length(); i++) {
-            Node newNode = new Node(word.charAt(i));
-            if (head == null) {
-                head = newNode;
-                tail = newNode;
+        private Node stringToLinkedList(String word) {
+            Node head = null, tail = null;
+            for (int i = 0; i < word.length(); i++) {
+                Node newNode = new Node(word.charAt(i));
+                if (head == null) {
+                    head = newNode;
+                    tail = newNode;
+                } else {
+                    tail.next = newNode;
+                    tail = newNode;
+                }
+            }
+            return head;
+        }
+
+        public boolean checkLinkedListPalindrome(String word) {
+            Node head = stringToLinkedList(word);
+            if (head == null || head.next == null) return true;
+
+            Node middle = findMiddle(head);
+            Node secondHalf = reverse(middle.next);
+
+            Node p1 = head, p2 = secondHalf;
+            boolean palindrome = true;
+
+            while (p2 != null) {
+                if (p1.data != p2.data) {
+                    palindrome = false;
+                    break;
+                }
+                p1 = p1.next;
+                p2 = p2.next;
+            }
+
+            // Restore the original list
+            middle.next = reverse(secondHalf);
+            return palindrome;
+        }
+
+        public boolean checkRecursivePalindrome(String word, int start, int end) {
+            if (start >= end) return true;
+            if (word.charAt(start) != word.charAt(end)) return false;
+            return checkRecursivePalindrome(word, start + 1, end - 1);
+        }
+
+        // Unified method: ignores spaces and case
+        public boolean checkPalindrome(String input, int method) {
+            String normalized = input.replaceAll("\\s+", "").toLowerCase();
+            if (method == 1) {
+                return checkLinkedListPalindrome(normalized);
+            } else if (method == 2) {
+                return checkRecursivePalindrome(normalized, 0, normalized.length() - 1);
             } else {
-                tail.next = newNode;
-                tail = newNode;
+                // Default to Linked List
+                return checkLinkedListPalindrome(normalized);
             }
         }
-        return head;
-    }
-
-    static boolean isPalindromeLinkedList(Node head) {
-        if (head == null || head.next == null) return true;
-
-        Node middle = findMiddle(head);
-        Node secondHalf = reverse(middle.next);
-
-        Node p1 = head, p2 = secondHalf;
-        boolean palindrome = true;
-
-        while (p2 != null) {
-            if (p1.data != p2.data) {
-                palindrome = false;
-                break;
-            }
-            p1 = p1.next;
-            p2 = p2.next;
-        }
-
-        // Restore the original list
-        middle.next = reverse(secondHalf);
-
-        return palindrome;
-    }
-
-    // Recursive Method
-    static boolean isPalindromeRecursive(String word, int start, int end) {
-        if (start >= end) return true;
-        if (word.charAt(start) != word.charAt(end)) return false;
-        return isPalindromeRecursive(word, start + 1, end - 1);
     }
 
     public static void main(String[] args) {
@@ -92,10 +108,6 @@ public class CheckerApp {
         System.out.print("Enter a string to check for palindrome: ");
         String input = scanner.nextLine();
 
-        // Normalize input: remove spaces and lowercase (UC10)
-        String normalized = input.replaceAll("\\s+", "").toLowerCase();
-
-        // Let user choose method
         System.out.println("Choose method to check palindrome:");
         System.out.println("1. Linked List");
         System.out.println("2. Recursive");
@@ -103,18 +115,9 @@ public class CheckerApp {
         int choice = scanner.nextInt();
         scanner.close();
 
-        boolean isPalindrome = false;
-
-        if (choice == 1) {
-            Node head = stringToLinkedList(normalized);
-            isPalindrome = isPalindromeLinkedList(head);
-        } else if (choice == 2) {
-            isPalindrome = isPalindromeRecursive(normalized, 0, normalized.length() - 1);
-        } else {
-            System.out.println("Invalid choice. Defaulting to Linked List method.");
-            Node head = stringToLinkedList(normalized);
-            isPalindrome = isPalindromeLinkedList(head);
-        }
+        // Create PalindromeChecker service
+        PalindromeChecker checker = new PalindromeChecker();
+        boolean isPalindrome = checker.checkPalindrome(input, choice);
 
         if (isPalindrome) {
             System.out.println("The string \"" + input + "\" is a Palindrome (ignoring spaces & case).");
