@@ -5,7 +5,7 @@ public class CheckerApp {
     // PalindromeChecker class encapsulates all palindrome logic
     static class PalindromeChecker {
 
-        // Node class for linked list
+        // Node class for singly linked list
         static class Node {
             char data;
             Node next;
@@ -16,8 +16,23 @@ public class CheckerApp {
             }
         }
 
-        // Linked List Methods
-        private Node reverse(Node head) {
+        // --- Linked List Palindrome ---
+        private Node stringToLinkedList(String word) {
+            Node head = null, tail = null;
+            for (char c : word.toCharArray()) {
+                Node newNode = new Node(c);
+                if (head == null) {
+                    head = newNode;
+                    tail = newNode;
+                } else {
+                    tail.next = newNode;
+                    tail = newNode;
+                }
+            }
+            return head;
+        }
+
+        private Node reverseLinkedList(Node head) {
             Node prev = null;
             Node current = head;
             while (current != null) {
@@ -30,8 +45,7 @@ public class CheckerApp {
         }
 
         private Node findMiddle(Node head) {
-            Node slow = head;
-            Node fast = head;
+            Node slow = head, fast = head;
             while (fast != null && fast.next != null && fast.next.next != null) {
                 slow = slow.next;
                 fast = fast.next.next;
@@ -39,70 +53,51 @@ public class CheckerApp {
             return slow;
         }
 
-        private Node stringToLinkedList(String word) {
-            Node head = null, tail = null;
-            for (int i = 0; i < word.length(); i++) {
-                Node newNode = new Node(word.charAt(i));
-                if (head == null) {
-                    head = newNode;
-                    tail = newNode;
-                } else {
-                    tail.next = newNode;
-                    tail = newNode;
-                }
-            }
-            return head;
-        }
-
-        // Check palindrome using Linked List
         public boolean checkLinkedListPalindrome(String word) {
             Node head = stringToLinkedList(word);
             if (head == null || head.next == null) return true;
 
             Node middle = findMiddle(head);
-            Node secondHalf = reverse(middle.next);
+            Node secondHalf = reverseLinkedList(middle.next);
 
             Node p1 = head, p2 = secondHalf;
-            boolean palindrome = true;
+            boolean isPalindrome = true;
 
             while (p2 != null) {
                 if (p1.data != p2.data) {
-                    palindrome = false;
+                    isPalindrome = false;
                     break;
                 }
                 p1 = p1.next;
                 p2 = p2.next;
             }
 
-            // Restore the original list
-            middle.next = reverse(secondHalf);
-            return palindrome;
+            // Restore original list
+            middle.next = reverseLinkedList(secondHalf);
+            return isPalindrome;
         }
 
-        // Check palindrome recursively
+        // --- Recursive Palindrome ---
         public boolean checkRecursivePalindrome(String word, int start, int end) {
             if (start >= end) return true;
             if (word.charAt(start) != word.charAt(end)) return false;
             return checkRecursivePalindrome(word, start + 1, end - 1);
         }
 
-        // Unified method: ignores spaces and case
+        // --- Unified method with normalization ---
         public boolean checkPalindrome(String input, int method) {
-            String normalized = input.replaceAll("\\s+", "").toLowerCase();
+            // Normalize: remove spaces & punctuation, convert to lowercase
+            String normalized = input.replaceAll("[\\W_]+", "").toLowerCase();
+
             switch (method) {
-                case 1:
-                    return checkLinkedListPalindrome(normalized);
-                case 2:
-                    return checkRecursivePalindrome(normalized, 0, normalized.length() - 1);
-                default:
-                    // Default to Linked List
-                    return checkLinkedListPalindrome(normalized);
+                case 1: return checkLinkedListPalindrome(normalized);
+                case 2: return checkRecursivePalindrome(normalized, 0, normalized.length() - 1);
+                default: return checkLinkedListPalindrome(normalized);
             }
         }
     }
 
     public static void main(String[] args) {
-
         System.out.println("Welcome to the Palindrome Checker Application");
         System.out.println("Application Name : Palindrome Checker App");
         System.out.println("Application Version : 1.0");
@@ -114,24 +109,27 @@ public class CheckerApp {
             System.out.println("Choose method to check palindrome:");
             System.out.println("1. Linked List");
             System.out.println("2. Recursive");
-            System.out.print("Enter choice (1 or 2): ");
 
-            int choice;
+            int choice = 1; // default
             if (scanner.hasNextInt()) {
-                choice = scanner.nextInt();
+                int temp = scanner.nextInt();
+                if (temp == 1 || temp == 2) {
+                    choice = temp;
+                } else {
+                    System.out.println("Invalid choice. Defaulting to Linked List method.");
+                }
             } else {
                 System.out.println("Invalid input. Defaulting to Linked List method.");
-                choice = 1;
             }
 
-            // Create PalindromeChecker service
+            // Check palindrome
             PalindromeChecker checker = new PalindromeChecker();
             boolean isPalindrome = checker.checkPalindrome(input, choice);
 
             if (isPalindrome) {
-                System.out.println("The string \"" + input + "\" is a Palindrome (ignoring spaces & case).");
+                System.out.println("The string \"" + input + "\" is a Palindrome (ignoring spaces, punctuation & case).");
             } else {
-                System.out.println("The string \"" + input + "\" is not a Palindrome (ignoring spaces & case).");
+                System.out.println("The string \"" + input + "\" is not a Palindrome (ignoring spaces, punctuation & case).");
             }
         }
     }
